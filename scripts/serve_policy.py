@@ -92,7 +92,11 @@ def main(args: Args) -> None:
     local_ip = socket.gethostbyname(hostname)
     logging.info("Creating server (host: %s, ip: %s)", hostname, local_ip)
 
-    if not policy.model.config.svla:
+    # `Policy` keeps the model in `_model`; `PolicyRecorder` (--record) wraps it in `_policy`.
+    # The PyTorch model exposes `.config`, while the JAX `Pi0` model does not, so probe safely.
+    policy_model = policy._model if hasattr(policy, "_model") else policy._policy._model
+    is_svla = bool(getattr(getattr(policy_model, "config", None), "svla", False))
+    if not is_svla:
         server = websocket_policy_server.WebsocketPolicyServer(
             policy=policy,
             host="0.0.0.0",

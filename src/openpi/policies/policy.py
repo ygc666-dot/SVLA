@@ -90,10 +90,14 @@ class Policy(BasePolicy):
         observation = _model.Observation.from_dict(inputs)
         start_time = time.monotonic()
         actions = self._sample_actions(sample_rng_or_pytorch_device, observation, **sample_kwargs)
+        # `action_states` is a placeholder here: it only has to exist so that the strict
+        # `Unnormalize` output transform finds every key of the norm stats. It must be
+        # created with the same backend as `actions` (JAX for the flax models).
+        zeros_like = torch.zeros_like if self._is_pytorch_model else jnp.zeros_like
         outputs = {
             "state": inputs["state"],
             "actions": actions,
-            "action_states": torch.zeros_like(actions),
+            "action_states": zeros_like(actions),
         }
         model_time = time.monotonic() - start_time
         if self._is_pytorch_model:

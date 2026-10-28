@@ -1,0 +1,13 @@
+# Local preparation artefacts - do not commit.
+ckpt/
+.wheels/
+.prepare_logs/
+results/
+
+# Virtual environments
+.venv/
+examples/libero/.venv/
+
+# Python
+__pycache__/
+*.py[cod]

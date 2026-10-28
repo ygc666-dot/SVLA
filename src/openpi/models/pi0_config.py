@@ -30,6 +30,12 @@ class Pi0Config(_model.BaseModelConfig):
     # - the action expert uses adaRMSNorm to inject the flow matching timestep
     pi05: bool = False
     svla: bool = False
+    # Read by svla_pytorch.SVLAPytorch.embed_suffix to build the action attention mask,
+    # which must have one entry per action token. In the action-flow formulation exactly
+    # one action token is denoised per step (both `forward` and `sample_actions` build
+    # x_t with shape [B, 1, D]), so the mask has to be [1] -> the SFP branch.
+    # The non-SFP branch emits `action_horizon` entries and crashes with a shape mismatch.
+    use_sfp: bool = True
     # This config option is not used directly by the model, but it is read by the ModelTransformFactory.
     discrete_state_input: bool = None  # type: ignore
 

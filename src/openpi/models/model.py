@@ -31,6 +31,8 @@ class ModelType(enum.Enum):
     """Supported model types."""
 
     PI0 = "pi0"
+    # Referenced by config.ModelTransformFactory / policies.droid_policy / models.pi0_fast.
+    PI0_FAST = "pi0_fast"
     PI05 = "pi05"
     SVLA = "streamingvla"
 

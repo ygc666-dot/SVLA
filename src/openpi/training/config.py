@@ -121,7 +121,9 @@ class ModelTransformFactory(GroupFactory):
                         _transforms.PadStatesAndActions(model_config.action_dim),
                     ],
                 )
-            case _model.ModelType.PI05:
+            # SVLA is a pi05 derivative (pi05=True, svla=True) and needs exactly the same
+            # model transforms; without this branch the match falls through and returns None.
+            case _model.ModelType.PI05 | _model.ModelType.SVLA:
                 assert isinstance(model_config, pi0_config.Pi0Config)
                 return _transforms.Group(
                     inputs=[
@@ -446,6 +448,10 @@ _CONFIGS = [
         model=pi0_config.Pi0Config(pi05=True, svla=True, action_horizon=10, discrete_state_input=False),
         data=LeRobotLiberoDataConfig(
             repo_id="/path/to/libero_dataset_with_action_states",
+            # Pin the asset id so that inference reads norm stats from
+            # "<checkpoint_dir>/assets/libero/norm_stats.json" instead of falling back to
+            # repo_id (an absolute placeholder path with undefined join behaviour).
+            assets=AssetsConfig(asset_id="libero"),
             base_config=DataConfig(prompt_from_task=True),
             extra_delta_transform=False,
             use_action_states=True,

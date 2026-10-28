@@ -1,5 +1,6 @@
 import logging
 import math
+import os
 
 import torch
 from torch import Tensor
@@ -101,7 +102,10 @@ class SVLAPytorch(nn.Module):
         object.__setattr__(self, 'aeo_predictor', aeo)
         
         # Load the checkpoint for the AEO predictor
-        checkpoint_path = "TODO: Replace with your_AEO_predictor_checkpoint_path_here"  # e.g., "gs://openpi-assets/checkpoints/aeo_predictor/your_checkpoint.pth"
+        checkpoint_path = os.environ.get(
+            "SVLA_AEO_PREDICTOR_PATH",
+            "/home/go2/StreamingVLA/StreamingVLA/ckpt/StreamingVLA_LIBERO_Predictor/svla_predictor.pth",
+        )
         
         checkpoint = torch.load(checkpoint_path, map_location='cpu')
         real_state_dict = checkpoint.get("model_state_dict", checkpoint)
